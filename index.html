@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus OD Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+    <h1>Campus OD Management System</h1>
+    <p>Smart Internal On-Duty Tracking System</p>
+</header>
+
+<nav>
+    
+        <button onclick="openPage('statusPage')">📋<small>Status</small></button>
+        <button onclick="openPage('historyPage')">📚<small>History</small></button>
+    </nav>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+</nav>
+
+<main>
+    <section id="home" class="page">
+        <h2>Welcome, Student!</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>Apply OD</h3>
+                <p>Submit your internal OD request.</p>
+                <button onclick="showPage('apply')">Apply Now</button>
+            </div>
+            <div class="card">
+                <h3>Location Check-in</h3>
+                <p>Share your current location with permission.</p>
+                <button onclick="showPage('track')">Check Location</button>
+            </div>
+            <div class="card">
+                <h3>OD Status</h3>
+                <p>Check your application status.</p>
+                <button onclick="showPage('status')">View Status</button>
+            </div>
+        </div>
+    </section>
+
+    <section id="apply" class="page hidden">
+        <h2>Internal OD Application</h2>
+        <form id="odForm">
+            <input id="student" placeholder="Student Name" required>
+            <input id="roll" placeholder="Register Number" required>
+            <input id="department" placeholder="Department" required>
+            <input id="purpose" placeholder="OD Purpose" required>
+            <input id="location" placeholder="Work Location / Venue" required>
+            <input id="faculty" placeholder="Faculty In-charge" required>
+            <label>OD Date</label>
+            <input id="date" type="date" required>
+            <label>Starting Time</label>
+            <input id="start" type="time" required>
+            <label>Ending Time</label>
+            <input id="end" type="time" required>
+            <button type="submit">Submit OD Request</button>
+        </form>
+        <p id="message"></p>
+    </section>
+
+    <section id="track" class="page hidden">
+        <h2>Student Location</h2>
+        <p>Location sharing requires your permission.</p>
+        <button onclick="getLocation()">Share My Location</button>
+        <button onclick="stopLocation()">Stop Sharing</button>
+        <div id="locationResult"></div>
+    </section>
+
+    <section id="status" class="page hidden">
+        <h2>OD Application Status</h2>
+        <div id="statusResult">No OD application submitted.</div>
+        <h3>Faculty Approval (Demo)</h3>
+        <button onclick="updateStatus('Approved')">Approve</button>
+        <button onclick="updateStatus('Rejected')">Reject</button>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 Campus OD Management System</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

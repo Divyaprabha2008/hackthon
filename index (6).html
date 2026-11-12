@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECE CampusOD | Official In-Campus On-Duty & Live Telemetry Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #070d12;
+            --bg-panel: #0e1821;
+            --bg-card: #13212e;
+            --bg-input: #091118;
+            --primary: #10b981;
+            --primary-glow: rgba(16, 185, 129, 0.25);
+            --primary-dark: #059669;
+            --secondary: #3b82f6;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #1e3246;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Emergency Broadcast Banner */
+        #emergencyBanner {
+            background: linear-gradient(90deg, #ef4444, #b91c1c);
+            color: #fff;
+            padding: 8px 32px;
+            font-size: 12.5px;
+            font-weight: 700;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            animation: pulseBanner 1s infinite alternate;
+        }
+
+        @keyframes pulseBanner {
+            from { opacity: 0.85; }
+            to { opacity: 1; }
+        }
+
+        /* Official Top Institutional Bar */
+        .top-bar {
+            background: #04080b;
+            padding: 6px 32px;
+            font-size: 11px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            letter-spacing: 0.4px;
+        }
+
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .blink-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Main Header */
+        header {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-emblem {
+            width: 46px;
+            height: 46px;
+            background: linear-gradient(135deg, var(--primary), #047857);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 18px;
+            color: #000;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .brand-title h1 {
+            font-size: 19px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            color: #fff;
+        }
+
+        .brand-title span {
+            font-size: 12px;
+            color: var(--text-muted);
+            display: block;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: var(--bg-input);
+            padding: 5px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            gap: 4px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: #03150e;
+        }
+
+        /* Main Layout */
+        main {
+            flex: 1;
+            padding: 28px 32px;
+            max-width: 1480px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid Systems */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1.05fr 1.25fr;
+            gap: 24px;
+        }
+
+        .grid-kpi {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Cards & Panels */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header p {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        /* KPI Cards */
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .kpi-info span {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-info h3 {
+            font-size: 26px;
+            font-weight: 800;
+            margin-top: 4px;
+            color: #fff;
+        }
+
+        .kpi-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Forms */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        .form-group label {
+            display: block;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 11px 14px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: #fff;
+            font-size: 13.5px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus { border-color: var(--primary); }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #03150e;
+            border: none;
+            padding: 13px 20px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 700;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover { background: var(--primary-dark); color: #fff; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* Interactive SECE Campus Blueprint Map */
+        .campus-map-box {
+            background: #081017;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .campus-svg {
+            width: 100%;
+            height: 270px;
+            background-image: radial-gradient(#1e3246 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 10px;
+        }
+
+        .zone-block {
+            fill: #132332;
+            stroke: #2a4763;
+            stroke-width: 1.5;
+            rx: 8;
+            transition: all 0.3s;
+        }
+
+        .zone-block.active-zone {
+            fill: rgba(16, 185, 129, 0.18);
+            stroke: #10b981;
+            stroke-width: 2;
+        }
+
+        .zone-block.alert-zone {
+            fill: rgba(239, 68, 68, 0.22);
+            stroke: #ef4444;
+            stroke-width: 2.5;
+            animation: pulseAlert 1.2s infinite;
+        }
+
+        @keyframes pulseAlert {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .zone-label {
+            fill: #94a3b8;
+            font-size: 11px;
+            font-weight: 600;
+            text-anchor: middle;
+        }
+
+        /* Table & Badges */
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th, td {
+            padding: 13px 14px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .badge-green { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge-amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .badge-red { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge-blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        .btn-act {
+            padding: 5px 10px;
+            border-radius: 6px;
+            border: none;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .act-approve { background: var(--primary); color: #000; }
+        .act-reject { background: var(--danger); color: #fff; }
+        .act-ping { background: #1e3a5f; color: #93c5fd; }
+
+        /* Live Session Timer Box */
+        .session-card {
+            background: linear-gradient(145deg, #0f241e, #111e2b);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 18px;
+        }
+
+        .timer-display {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Digital Pass QR Badge style */
+        .digital-badge {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Emergency Broadcast Banner -->
+    <div id="emergencyBanner">
+        <span><i class="fa-solid fa-triangle-exclamation"></i> INSTITUTIONAL BROADCAST: <span id="broadcastMsgText">All students on OD must report to their assigned geofence zone immediately.</span></span>
+        <button onclick="dismissBroadcast()" style="background:transparent; border:none; color:#fff; cursor:pointer; font-weight:bold;">✕ DISMISS</button>
+    </div>
+
+    <!-- Institutional Status Strip -->
+    <div class="top-bar">
+        <div><strong>SRI ESHWAR COLLEGE OF ENGINEERING</strong> (Autonomous) • Kinathukadavu, Coimbatore - 641202</div>
+        <div class="live-indicator">
+            <span class="blink-dot"></span>
+            <span>CAMPUS TELEMETRY & GEOFENCE ENGINE ONLINE</span>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="brand">
+            <div class="brand-emblem">SECE</div>
+            <div class="brand-title">
+                <h1>CampusOD Governance Portal</h1>
+                <span>Official In-Campus Student On-Duty & Real-Time Location Verification</span>
+            </div>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-btn active" id="tabStudent" onclick="switchTab('student')">
+                <i class="fa-solid fa-user-graduate"></i> Student OD Portal
+            </button>
+            <button class="nav-btn" id="tabStaff" onclick="switchTab('staff')">
+                <i class="fa-solid fa-user-shield"></i> Faculty / HOD Control Room
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- ================= STUDENT VIEW ================= -->
+        <section id="studentSection" class="section active">
+            <div class="grid-2">
+                <!-- Left: Official OD Application Form -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="fa-solid fa-file-signature" style="color:var(--primary)"></i> In-Campus On-Duty Application</h2>
+                            <p>Mandatory verification for missing regular class hours within SECE campus.</p>
+                        </div>
+                        <span class="badge badge-blue">AY 2026-27</span>
+                    </div>
+
+                    <form id="odForm" onsubmit="handleODSubmit(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Student Full Name *</label>
+                                <input type="text" id="inName" class="form-control" placeholder="e.g. Hariharan S" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Register Number *</label>
+                                <input type="text" id="inRoll" class="form-control" placeholder="e.g. 23CS048" required>
+                            </div>
+                        </div>
+
+                        <!-- Year & Department Cascade Selection -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Academic Year *</label>
+                                <select id="inYear" class="form-control" onchange="updateDepartments()" required>
+                                    <option value="I Year">I Year</option>
+                                    <option value="II Year">II Year</option>
+                                    <option value="III Year" selected>III Year</option>
+                                    <option value="IV Year">IV Year</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Department & Section *</label>
+                                <select id="inDept" class="form-control" required>
+                                    <!-- Populated dynamically -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Approving Faculty / Coordinator *</label>
+                            <input type="text" id="inStaff" class="form-control" placeholder="e.g. Dr. K. Suresh (HOD)" required>
+                        </div>
+
+                        <!-- Official OD Purpose with Others Option -->
+                        <div class="form-group">
+                            <label>Official OD Purpose *</label>
+                            <select id="inPurpose" class="form-control" onchange="toggleOtherPurpose(); calculateSmartMatch();" required>
+                                <option value="Hackathon / Technical Event Organizing">Hackathon / Technical Event Organizing</option>
+                                <option value="NAAC / NBA Accreditation File Work">NAAC / NBA Accreditation File Work</option>
+                                <option value="Placement Drive Volunteer Duty">Placement Drive Volunteer Duty</option>
+                                <option value="Center of Excellence (CoE) Lab Project">Center of Excellence (CoE) Lab Project</option>
+                                <option value="Sports & Cultural Practice">Sports & Cultural Practice</option>
+                                <option value="Others">Others (Specify below)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="otherPurposeGroup" style="display: none;">
+                            <label>Specify Custom Purpose *</label>
+                            <input type="text" id="inOtherPurpose" class="form-control" placeholder="Enter custom OD purpose...">
+                        </div>
+
+                        <div class="form-row">
+                            <!-- Target Campus Zone with Others Option -->
+                            <div class="form-group">
+                                <label>Target Assigned Zone *</label>
+                                <select id="inZone" class="form-control" onchange="toggleOtherZone(); calculateSmartMatch();" required>
+                                    <option value="Main Block & Auditorium">Main Block & Auditorium</option>
+                                    <option value="Admin & Placement Cell">Admin & Placement Cell</option>
+                                    <option value="Center of Excellence (CoE) Labs">Center of Excellence (CoE) Labs</option>
+                                    <option value="Central Library & IQAC">Central Library & IQAC</option>
+                                    <option value="Sports Complex & Ground">Sports Complex & Ground</option>
+                                    <option value="Others">Others (Specify below)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Duty Time Slot *</label>
+                                <select id="inSlot" class="form-control" required>
+                                    <option value="Period 1 - 3 (08:45 AM - 11:15 AM)">Period 1 - 3 (08:45 AM - 11:15 AM)</option>
+                                    <option value="Period 4 - 5 (11:30 AM - 01:10 PM)">Period 4 - 5 (11:30 AM - 01:10 PM)</option>
+                                    <option value="Afternoon Session (02:00 PM - 04:30 PM)">Afternoon Session (02:00 PM - 04:30 PM)</option>
+                                    <option value="Full Day Campus Event">Full Day Campus Event</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="otherZoneGroup" style="display: none;">
+                            <label>Specify Custom Campus Zone *</label>
+                            <input type="text" id="inOtherZone" class="form-control" placeholder="Enter custom location/zone...">
+                        </div>
+
+                        <!-- AI Purpose-Location Compatibility Preview -->
+                        <div style="background: var(--bg-input); border: 1px solid var(--border); padding: 12px 14px; border-radius: 10px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 11.5px; color: var(--text-muted);">AI Purpose-to-Zone Compatibility Score</div>
+                                <div id="matchFeedback" style="font-size: 13px; font-weight: 700; color: var(--primary);">98% Match — Valid Zone for Event Organizing</div>
+                            </div>
+                            <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary); font-size: 18px;"></i>
+                        </div>
+
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-satellite-dish"></i> Submit OD & Start Live GPS Telemetry
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right: Live Telemetry & Interactive SECE Map -->
+                <div class="card">
+                    <div class="card-header">
+                        <div>
+                            <h2><i class="fa-solid fa-map-location-dot" style="color:var(--primary)"></i> Live Campus Geofence & Telemetry</h2>
+                            <p>Real-time location beacon verification inside Sri Eshwar Campus.</p>
+                        </div>
+                        <button class="btn-outline" onclick="simulateMovementTest()">
+                            <i class="fa-solid fa-shuffle"></i> Simulate Location Shift
+                        </button>
+                    </div>
+
+                    <!-- Active Student Duty Status -->
+                    <div id="activeStudentBox">
+                        <div style="background: var(--bg-input); border: 1px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 18px;">
+                            <span style="color: var(--text-muted); font-size: 13px;">No active OD session running. Submit your OD request to generate your Digital OD Pass & Live Beacon.</span>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Campus Blueprint Map -->
+                    <div class="campus-map-box">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px;">
+                            <span style="font-weight:700; color:#fff;"><i class="fa-solid fa-layer-group" style="color:var(--primary)"></i> SECE Campus Zone Map (Live Pins & Geofence)</span>
+                            <span id="gpsCoordsText" style="color:var(--text-muted); font-family:monospace;">10.8278° N, 77.0605° E</span>
+                        </div>
+
+                        <svg class="campus-svg" viewBox="0 0 600 260" id="campusSvg">
+                            <rect id="zone-Main" class="zone-block active-zone" x="25" y="25" width="165" height="90"></rect>
+                            <text class="zone-label" x="107" y="65">MAIN BLOCK &</text>
+                            <text class="zone-label" x="107" y="80">AUDITORIUM</text>
+
+                            <rect id="zone-Admin" class="zone-block" x="215" y="25" width="165" height="90"></rect>
+                            <text class="zone-label" x="297" y="65">ADMIN &</text>
+                            <text class="zone-label" x="297" y="80">PLACEMENT CELL</text>
+
+                            <rect id="zone-CoE" class="zone-block" x="405" y="25" width="170" height="90"></rect>
+                            <text class="zone-label" x="490" y="65">CoE & RESEARCH</text>
+                            <text class="zone-label" x="490" y="80">LABS</text>
+
+                            <rect id="zone-Library" class="zone-block" x="25" y="145" width="250" height="90"></rect>
+                            <text class="zone-label" x="150" y="192">CENTRAL LIBRARY & IQAC</text>
+
+                            <rect id="zone-Sports" class="zone-block" x="305" y="145" width="270" height="90"></rect>
+                            <text class="zone-label" x="440" y="192">SPORTS COMPLEX & GROUND</text>
+
+                            <!-- Live Student Pins -->
+                            <g id="mapPins">
+                                <circle cx="95" cy="95" r="6" fill="#10b981"></circle>
+                                <text x="95" y="110" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">22CS012</text>
+
+                                <circle cx="485" cy="95" r="6" fill="#10b981"></circle>
+                                <text x="485" y="110" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">23EC034</text>
+
+                                <circle cx="310" cy="130" r="6" fill="#ef4444"></circle>
+                                <text x="310" y="122" fill="#f87171" font-size="9" text-anchor="middle" font-weight="bold">22IT089 (Out of Zone!)</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= STAFF / HOD CONTROL ROOM ================= -->
+        <section id="staffSection" class="section">
+            <!-- Top KPI Metrics -->
+            <div class="grid-kpi">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Active Campus ODs</span>
+                        <h3 id="kpiActive">4</h3>
+                    </div>
+                    <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--primary);">
+                        <i class="fa-solid fa-users-viewfinder"></i>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Pending Approvals</span>
+                        <h3 id="kpiPending">1</h3>
+                    </div>
+                    <div class="kpi-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Geofence Alerts</span>
+                        <h3 id="kpiAlerts" style="color: var(--danger);">1</h3>
+                    </div>
+                    <div class="kpi-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span>Purpose Compliance</span>
+                        <h3 style="color: var(--primary);">96.4%</h3>
+                    </div>
+                    <div class="kpi-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--secondary);">
+                        <i class="fa-solid fa-shield-check"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Monitoring Table Card -->
+            <div class="card" style="margin-bottom: 24px;">
+                <div class="card-header">
+                    <div>
+                        <h2><i class="fa-solid fa-tower-observation" style="color:var(--primary)"></i> HOD & Faculty Live Student OD Monitor</h2>
+                        <p>Verify student whereabouts, purpose match scores, and broadcast campus-wide notices.</p>
+                    </div>
+                    <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                        <button class="btn-outline" onclick="triggerBroadcastModal()">
+                            <i class="fa-solid fa-bullhorn" style="color: var(--warning);"></i> Broadcast Alert
+                        </button>
+                        <button class="btn-outline" onclick="exportCSVReport()">
+                            <i class="fa-solid fa-file-excel"></i> Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filter & Search Controls -->
+                <div class="filter-bar">
+                    <input type="text" id="searchInput" class="form-control" style="max-width: 280px;" placeholder="Search by Name, Roll No..." onkeyup="renderTable()">
+                    <select id="deptFilter" class="form-control" style="max-width: 190px;" onchange="renderTable()">
+                        <option value="ALL">All Departments</option>
+                        <option value="CSE">CSE</option>
+                        <option value="AI & DS">AI & DS</option>
+                        <option value="AI & ML">AI & ML</option>
+                        <option value="IT">IT</option>
+                        <option value="CSBS">CSBS</option>
+                        <option value="ECE">ECE</option>
+                        <option value="EEE">EEE</option>
+                        <option value="EEE (VLSI)">EEE (VLSI)</option>
+                        <option value="Mechanical">Mechanical</option>
+                    </select>
+                    <select id="statusFilter" class="form-control" style="max-width: 190px;" onchange="renderTable()">
+                        <option value="ALL">All Statuses</option>
+                        <option value="Approved">Approved / Live</option>
+                        <option value="Pending">Pending Review</option>
+                        <option value="Alert">Geofence Violation</option>
+                    </select>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Student & Dept</th>
+                                <th>OD Purpose & Slot</th>
+                                <th>Assigned Zone</th>
+                                <th>Live GPS Location</th>
+                                <th>Match Score</th>
+                                <th>Status</th>
+                                <th>HOD / Staff Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="odTableBody">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Control Room Radar Map -->
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2><i class="fa-solid fa-satellite-dish" style="color:var(--primary)"></i> Live Control Room Campus Geofence Radar</h2>
+                        <p>Real-time institutional oversight of active student beacons across SECE blocks.</p>
+                    </div>
+                </div>
+                <div class="campus-map-box">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-size:12px;">
+                        <span style="font-weight:700; color:#fff;"><i class="fa-solid fa-layer-group" style="color:var(--primary)"></i> SECE Master Radar & Violation Matrix</span>
+                        <span style="color:var(--text-muted); font-family:monospace;">Telemetry Status: Live Monitoring Active</span>
+                    </div>
+
+                    <svg class="campus-svg" viewBox="0 0 600 260" id="controlRoomSvg">
+                        <rect id="c-zone-Main" class="zone-block active-zone" x="25" y="25" width="165" height="90"></rect>
+                        <text class="zone-label" x="107" y="65">MAIN BLOCK &</text>
+                        <text class="zone-label" x="107" y="80">AUDITORIUM</text>
+
+                        <rect id="c-zone-Admin" class="zone-block" x="215" y="25" width="165" height="90"></rect>
+                        <text class="zone-label" x="297" y="65">ADMIN &</text>
+                        <text class="zone-label" x="297" y="80">PLACEMENT CELL</text>
+
+                        <rect id="c-zone-CoE" class="zone-block" x="405" y="25" width="170" height="90"></rect>
+                        <text class="zone-label" x="490" y="65">CoE & RESEARCH</text>
+                        <text class="zone-label" x="490" y="80">LABS</text>
+
+                        <rect id="c-zone-Library" class="zone-block" x="25" y="145" width="250" height="90"></rect>
+                        <text class="zone-label" x="150" y="192">CENTRAL LIBRARY & IQAC</text>
+
+                        <rect id="c-zone-Sports" class="zone-block" x="305" y="145" width="270" height="90"></rect>
+                        <text class="zone-label" x="440" y="192">SPORTS COMPLEX & GROUND</text>
+
+                        <g id="controlRoomPins">
+                            <circle cx="95" cy="95" r="6" fill="#10b981"></circle>
+                            <text x="95" y="110" fill="#34d399" font-size="9" text-anchor="middle" font-weight="bold">22CS012</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const deptStructure = [
+            { name: "CSE", sections: ["CSE-A", "CSE-B", "CSE-C", "CSE-D"] },
+            { name: "AI & DS", sections: ["AI & DS-A", "AI & DS-B", "AI & DS-C", "AI & DS-D"] },
+            { name: "AI & ML", sections: ["AI & ML-A", "AI & ML-B"] },
+            { name: "IT", sections: ["IT-A"] },
+            { name: "CSBS", sections: ["CSBS-A"] },
+            { name: "ECE", sections: ["ECE-A", "ECE-B"] },
+            { name: "EEE", sections: ["EEE-A"] },
+            { name: "EEE (VLSI)", sections: ["EEE (VLSI)-A"] },
+            { name: "Mechanical", sections: ["Mechanical-A"] }
+        ];
+
+        function updateDepartments() {
+            const deptSelect = document.getElementById('inDept');
+            deptSelect.innerHTML = "";
+            deptStructure.forEach(dept => {
+                dept.sections.forEach(sec => {
+                    const opt = document.createElement('option');
+                    opt.value = sec;
+                    opt.textContent = sec;
+                    deptSelect.appendChild(opt);
+                });
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateDepartments();
+        });
+
+        function toggleOtherPurpose() {
+            const purposeVal = document.getElementById('inPurpose').value;
+            const otherGroup = document.getElementById('otherPurposeGroup');
+            if (purposeVal === 'Others') {
+                otherGroup.style.display = 'block';
+                document.getElementById('inOtherPurpose').setAttribute('required', 'true');
+            } else {
+                otherGroup.style.display = 'none';
+                document.getElementById('inOtherPurpose').removeAttribute('required');
+            }
+        }
+
+        function toggleOtherZone() {
+            const zoneVal = document.getElementById('inZone').value;
+            const otherGroup = document.getElementById('otherZoneGroup');
+            if (zoneVal === 'Others') {
+                otherGroup.style.display = 'block';
+                document.getElementById('inOtherZone').setAttribute('required', 'true');
+            } else {
+                otherGroup.style.display = 'none';
+                document.getElementById('inOtherZone').removeAttribute('required');
+            }
+        }
+
+        let odRecords = [
+            {
+                id: 1,
+                name: "Kavya Subramanian",
+                roll: "22CS012",
+                dept: "CSE-A",
+                purpose: "Hackathon / Technical Event Organizing",
+                slot: "Period 1 - 3",
+                assignedZone: "Main Block & Auditorium",
+                liveLocation: "Main Block (1st Floor Hall)",
+                geofenceOk: true,
+                matchScore: 99,
+                status: "Approved"
+            },
+            {
+                id: 2,
+                name: "Arjun Krishnan",
+                roll: "23EC034",
+                dept: "ECE-B",
+                purpose: "Center of Excellence (CoE) Lab Project",
+                slot: "Full Day Campus Event",
+                assignedZone: "Center of Excellence (CoE) Labs",
+                liveLocation: "Robotics & IoT CoE Lab",
+                geofenceOk: true,
+                matchScore: 97,
+                status: "Approved"
+            },
+            {
+                id: 3,
+                name: "Deepak Raj",
+                roll: "22IT089",
+                dept: "IT-A",
+                purpose: "NAAC / NBA Accreditation File Work",
+                slot: "Period 4 - 5",
+                assignedZone: "Central Library & IQAC",
+                liveLocation: "Sports Complex Ground (Out of Zone!)",
+                geofenceOk: false,
+                matchScore: 42,
+                status: "Alert"
+            },
+            {
+                id: 4,
+                name: "Sneha Nair",
+                roll: "23AD019",
+                dept: "AI & DS-C",
+                purpose: "Placement Drive Volunteer Duty",
+                slot: "Afternoon Session",
+                assignedZone: "Admin & Placement Cell",
+                liveLocation: "Admin Block Lobby",
+                geofenceOk: true,
+                matchScore: 96,
+                status: "Pending"
+            }
+        ];
+
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let currentStudentRoll = null;
+        let isSimulatedViolation = false;
+
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+
+            if (tab === 'student') {
+                document.getElementById('tabStudent').classList.add('active');
+                document.getElementById('studentSection').classList.add('active');
+            } else {
+                document.getElementById('tabStaff').classList.add('active');
+                document.getElementById('staffSection').classList.add('active');
+                renderTable();
+            }
+        }
+
+        function calculateSmartMatch() {
+            let purpose = document.getElementById('inPurpose').value;
+            if (purpose === 'Others') purpose = document.getElementById('inOtherPurpose').value || 'Custom Event';
+            let zone = document.getElementById('inZone').value;
+            if (zone === 'Others') zone = document.getElementById('inOtherZone').value || 'Custom Zone';
+
+            const feedback = document.getElementById('matchFeedback');
+            let score = 98;
+            feedback.style.color = "#10b981";
+            feedback.innerText = `${score}% Match — Verified Official Zone for Selected Purpose`;
+            return score;
+        }
+
+        function handleODSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('inName').value;
+            const roll = document.getElementById('inRoll').value.toUpperCase();
+            const year = document.getElementById('inYear').value;
+            const deptSec = document.getElementById('inDept').value;
+            
+            let purpose = document.getElementById('inPurpose').value;
+            if (purpose === 'Others') purpose = document.getElementById('inOtherPurpose').value;
+
+            let zone = document.getElementById('inZone').value;
+            if (zone === 'Others') zone = document.getElementById('inOtherZone').value;
+
+            const slot = document.getElementById('inSlot').value;
+            const score = calculateSmartMatch();
+            currentStudentRoll = roll;
+            isSimulatedViolation = false;
+
+            const newEntry = {
+                id: Date.now(),
+                name: name,
+                roll: roll,
+                dept: `${deptSec} (${year})`,
+                purpose: purpose,
+                slot: slot,
+                assignedZone: zone,
+                liveLocation: zone + " (GPS Verified)",
+                geofenceOk: true,
+                matchScore: score,
+                status: "Pending"
+            };
+
+            odRecords.unshift(newEntry);
+
+            // Show Active Student Digital Pass & QR Badge
+            document.getElementById('activeStudentBox').innerHTML = `
+                <div class="session-card" id="studentSessionCard">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span class="badge badge-green" id="beaconBadge"><i class="fa-solid fa-broadcast-tower"></i> LIVE BEACON ACTIVE</span>
+                        <span class="timer-display" id="liveTimer">00:00:01</span>
+                    </div>
+                    <h3 style="font-size:16px; color:#fff;">${name} (${roll}) — ${deptSec} (${year})</h3>
+                    <p style="font-size:12.5px; color:#cbd5e1; margin:4px 0;"><strong>Purpose:</strong> ${purpose}</p>
+                    <p style="font-size:12.5px; color:var(--primary);" id="studentLiveLocText"><strong>Current Location:</strong> ${zone} (Inside Geofence)</p>
+                    
+                    <div class="digital-badge">
+                        <i class="fa-solid fa-qrcode" style="font-size:36px; color:var(--primary);"></i>
+                        <div>
+                            <div style="font-size:11.5px; font-weight:700; color:#fff;">SECE Crypto Pass #OD-${Math.floor(100000 + Math.random() * 900000)}</div>
+                            <div style="font-size:11px; color:var(--text-muted);">Verified for campus movement. Scan at security checkposts.</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (timerInterval) clearInterval(timerInterval);
+            secondsElapsed = 0;
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const hrs = String(Math.floor(secondsElapsed / 3600)).padStart(2, '0');
+                const mins = String(Math.floor((secondsElapsed % 3600) / 60)).padStart(2, '0');
+                const secs = String(secondsElapsed % 60).padStart(2, '0');
+                const el = document.getElementById('liveTimer');
+                if (el) el.innerText = `${hrs}:${mins}:${secs}`;
+            }, 1000);
+
+            updateMapPins();
+            updateKPIs();
+            alert("Official OD Request Submitted! Live telemetry tracking & Digital Pass generated.");
+        }
+
+        function simulateMovementTest() {
+            if (!currentStudentRoll) {
+                alert("Please submit an active OD request first to test telemetry location shifts!");
+                return;
+            }
+
+            isSimulatedViolation = !isSimulatedViolation;
+            const studentRec = odRecords.find(r => r.roll === currentStudentRoll);
+
+            if (studentRec) {
+                if (isSimulatedViolation) {
+                    studentRec.geofenceOk = false;
+                    studentRec.status = "Alert";
+                    studentRec.liveLocation = "Sports Ground Canteen (Out of Zone!)";
+                    document.getElementById('beaconBadge').className = "badge badge-red";
+                    document.getElementById('beaconBadge').innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> GEOFENCE VIOLATION DETECTED`;
+                    document.getElementById('studentSessionCard').style.borderColor = "var(--danger)";
+                    document.getElementById('studentLiveLocText').style.color = "var(--danger)";
+                    document.getElementById('studentLiveLocText').innerHTML = `<strong>Current Location:</strong> Sports Ground Canteen <span style="color:#f87171;">(Violation: Left Assigned Zone!)</span>`;
+                } else {
+                    studentRec.geofenceOk = true;
+                    studentRec.status = "Pending";
+                    studentRec.liveLocation = studentRec.assignedZone + " (GPS Verified)";
+                    document.getElementById('beaconBadge').className = "badge badge-green";
+                    document.getElementById('beaconBadge').innerHTML = `<i class="fa-solid fa-broadcast-tower"></i> LIVE BEACON ACTIVE`;
+                    document.getElementById('studentSessionCard').style.borderColor = "var(--primary)";
+                    document.getElementById('studentLiveLocText').style.color = "var(--primary)";
+                    document.getElementById('studentLiveLocText').innerHTML = `<strong>Current Location:</strong> ${studentRec.assignedZone} (Inside Geofence)`;
+                }
+            }
+
+            updateMapPins();
+            updateKPIs();
+        }
+
+        function triggerBroadcastModal() {
+            const msg = prompt("Enter institutional alert message for all active student OD beacons:", "All active OD students must verify attendance at their designated zones immediately.");
+            if (msg) {
+                document.getElementById('broadcastMsgText').innerText = msg;
+                document.getElementById('emergencyBanner').style.display = "flex";
+            }
+        }
+
+        function dismissBroadcast() {
+            document.getElementById('emergencyBanner').style.display = "none";
+        }
+
+        function updateMapPins() {
+            const pinsContainer = document.getElementById('mapPins');
+            const controlPinsContainer = document.getElementById('controlRoomPins');
+
+            let studentPinSvg = "";
+            let controlPinSvg = "";
+
+            document.getElementById('zone-Sports').classList.remove('alert-zone');
+            document.getElementById('c-zone-Sports').classList.remove('alert-zone');
+
+            odRecords.forEach((rec, idx) => {
+                let cx = 95 + (idx * 90) % 400;
+                let cy = 80 + (idx * 40) % 120;
+                let color = rec.geofenceOk ? "#10b981" : "#ef4444";
+
+                if (!rec.geofenceOk) {
+                    document.getElementById('zone-Sports').classList.add('alert-zone');
+                    document.getElementById('c-zone-Sports').classList.add('alert-zone');
+                    cx = 440;
+                    cy = 180;
+                }
+
+                studentPinSvg += `
+                    <circle cx="${cx}" cy="${cy}" r="7" fill="${color}"></circle>
+                    <text x="${cx}" y="${cy + 15}" fill="${color}" font-size="9" text-anchor="middle" font-weight="bold">${rec.roll} ${rec.geofenceOk ? '' : '(Alert)'}</text>
+                `;
+                controlPinSvg += `
+                    <circle cx="${cx}" cy="${cy}" r="7" fill="${color}"></circle>
+                    <text x="${cx}" y="${cy + 15}" fill="${color}" font-size="9" text-anchor="middle" font-weight="bold">${rec.roll} ${rec.geofenceOk ? '' : '(Alert)'}</text>
+                `;
+            });
+
+            if (pinsContainer) pinsContainer.innerHTML = studentPinSvg;
+            if (controlPinsContainer) controlPinsContainer.innerHTML = controlPinSvg;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('odTableBody');
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const deptVal = document.getElementById('deptFilter').value;
+            const statusVal = document.getElementById('statusFilter').value;
+
+            tbody.innerHTML = "";
+
+            const filtered = odRecords.filter(rec => {
+                const matchSearch = rec.name.toLowerCase().includes(search) ||
+                                    rec.roll.toLowerCase().includes(search) ||
+                                    rec.purpose.toLowerCase().includes(search);
+                const matchDept = deptVal === "ALL" || rec.dept.includes(deptVal);
+                const matchStatus = statusVal === "ALL" || rec.status === statusVal;
+                return matchSearch && matchDept && matchStatus;
+            });
+
+            filtered.forEach(rec => {
+                let statusBadge = "";
+                if (rec.status === "Approved") statusBadge = `<span class="badge badge-green">Approved & Live</span>`;
+                else if (rec.status === "Pending") statusBadge = `<span class="badge badge-amber">Pending Review</span>`;
+                else statusBadge = `<span class="badge badge-red">Out-of-Zone Alert</span>`;
+
+                let locBadge = rec.geofenceOk
+                    ? `<span style="color:#34d399; font-weight:600;"><i class="fa-solid fa-location-dot"></i> ${rec.liveLocation}</span>`
+                    : `<span style="color:#f87171; font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> ${rec.liveLocation}</span>`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <strong>${rec.name}</strong><br>
+                            <span style="font-size:11.5px; color:var(--text-muted);">${rec.roll} • ${rec.dept}</span>
+                        </td>
+                        <td>
+                            <strong>${rec.purpose}</strong><br>
+                            <span style="font-size:11.5px; color:var(--text-muted);">${rec.slot}</span>
+                        </td>
+                        <td>${rec.assignedZone}</td>
+                        <td>${locBadge}</td>
+                        <td><strong>${rec.matchScore}%</strong></td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                <button class="btn-act act-approve" onclick="updateStatus(${rec.id}, 'Approved')">Approve</button>
+                                <button class="btn-act act-reject" onclick="updateStatus(${rec.id}, 'Alert')">Flag / Revoke</button>
+                                <button class="btn-act act-ping" onclick="pingStudent('${rec.name}', '${rec.roll}')"><i class="fa-solid fa-bell"></i> Ping</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            updateKPIs();
+        }
+
+        function updateStatus(id, newStatus) {
+            const record = odRecords.find(r => r.id === id);
+            if (record) {
+                record.status = newStatus;
+                if (newStatus === 'Approved') record.geofenceOk = true;
+                renderTable();
+                updateMapPins();
+            }
+        }
+
+        function pingStudent(name, roll) {
+            alert(`Live Location Verification Ping sent to ${name} (${roll})'s mobile device!`);
+        }
+
+        function updateKPIs() {
+            document.getElementById('kpiActive').innerText = odRecords.length;
+            document.getElementById('kpiPending').innerText = odRecords.filter(r => r.status === 'Pending').length;
+            document.getElementById('kpiAlerts').innerText = odRecords.filter(r => r.status === 'Alert' || !r.geofenceOk).length;
+        }
+
+        function exportCSVReport() {
+            let csv = "Roll No,Student Name,Department,Purpose,Assigned Zone,Live Location,Match Score,Status\n";
+            odRecords.forEach(r => {
+                csv += `"${r.roll}","${r.name}","${r.dept}","${r.purpose}","${r.assignedZone}","${r.liveLocation}","${r.matchScore}%","${r.status}"\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "SECE_Official_Campus_OD_Report.csv";
+            a.click();
+        }
+
+        renderTable();
+        updateMapPins();
+    </script>
+</body>
+</html>
